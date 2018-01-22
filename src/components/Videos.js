@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Video from '../components/Video';
 import VideoPlayer from '../components/VideoPlayer';
+import VideosService from '../services/VideosService';
 import styled from 'styled-components';
 
-const Stage = styled.div`
+const Stage = styled.section`
     background: #eaeaea;
     width: 100vw;
-    padding: 25px;
     height: calc( 100vh - 75px );
 
     overflow: hidden;
@@ -46,6 +46,7 @@ const Wrap = styled.div = styled.ul`
 
 const Content = styled.ul`
     height: 400px;
+    padding: 0 25px;
     margin-left: ${props => ( -1 * props.scroll + 'px' )};
     transition: all 0.5s;
     width:  ${props => ( props.size + 'px' )};
@@ -55,17 +56,33 @@ class Videos extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            videos: undefined,
             selected: 0,
             playing: false
         };
         this.scrollWrap = null;
+
+        VideosService.getVideos().then(response => {
+            this.setState( ( state ) => { return { videos: response && response.result.entries ? response.result.entries : [] }; } );
+        });
+    }
+
+    selectVideo( videoId ){
+        (this.state.videos || []).some( ( element, index ) => {
+            if( element.id === videoId ){
+                this.setState( { selected: index } );                
+                return true;
+            }else{
+                return false;
+            }
+        }, this);
     }
 
     _next(){
         if( this.state.playing ) return;
         this.setState((prevState, props)=>{ 
             return {
-                selected: Math.min( prevState.selected + 1, props.videos.length - 1 )
+                selected: Math.min( prevState.selected + 1, this.state.videos.length - 1 )
             };
         });
     }
@@ -79,21 +96,26 @@ class Videos extends Component {
         });
     }
 
-    _handleKey( event ){ 
-        if(event.keyCode === 13){ this._handleVideoOpen(); }
+    _handleKey( event ){
+        if(event.keyCode === 27){ this._handleVideoClosed(); }
+
+        if( !this.props.visible || this.state.playing ) return;
+        //if(event.keyCode === 13){ this._handleVideoOpen(); }
         if(event.keyCode === 40){ this._next(); }
         if(event.keyCode === 39){ this._next(); }
         if(event.keyCode === 38){ this._previous(); }
         if(event.keyCode === 37){ this._previous(); }
+        
     }
 
     _handleVideoOpen(){
         if( this.state.playing ) return;
         this.setState((prevState, props)=>{ 
             return {
-                playing: this.props.videos[ this.state.selected ]
+                playing: this.state.videos[ this.state.selected ]
             };
-        });    
+        });
+        this.props.onVideoPlays(this.state.videos[ this.state.selected ]);
     }
 
     _handleVideoClosed(){
@@ -109,7 +131,7 @@ class Videos extends Component {
         if( !this.scrollWrap || !this.scrollWrap.children.length ) return 0;
         
         let wrapWidth = this.scrollWrap.parentNode.getBoundingClientRect().width;
-        let itemWidth = this.scrollWrap.children[0].getBoundingClientRect().width + 20;
+        let itemWidth = this.scrollWrap.children[0].getBoundingClientRect().width + 22;
 
         let count = Math.floor( wrapWidth / itemWidth );
         let lastLimit = this.scrollWrap.children.length;
@@ -146,7 +168,7 @@ class Videos extends Component {
     }
     
     componentDidUpdate(prevProps, prevState){
-        if( prevProps && prevProps.videos !== this.props.videos ) this.forceUpdate();
+        if( prevState && prevState.videos !== this.state.videos ) this.forceUpdate();
     }
 
     componentWillMount(){
@@ -161,8 +183,10 @@ class Videos extends Component {
         let dynLimits = this._calculateViewed();
         let viewLimit = dynLimits.last || 0;
 
-        if( !this.props.videos ){               return <Stage className="loading">Loading...</Stage> }
-        else if( !this.props.videos.length ){   return <Stage className="error">Error on loading.<br/> Please, check your connection and try again in a minute.</Stage> }
+        let canTab = this.props.visible ? "0" : "";
+
+        if( !this.state.videos ){               return <Stage className="loading">Loading...</Stage> }
+        else if( !this.state.videos.length ){   return <Stage className="error">Error on loading.<br/> Please, check your connection and try again in a minute.</Stage> }
         else {
             let template =  <Stage>
                                 { this.state.playing && 
@@ -170,7 +194,7 @@ class Videos extends Component {
                                 }
                                 <Wrap>
                                     <Content className="" innerRef={(wrap) => { this.scrollWrap = wrap; }} scroll={dynLimits.scroll} size={ dynLimits.totalScroll } >
-                                        {this.props.videos.map((video, index) => <Video key={index} selected={ index === this.state.selected } viewed={ index <= viewLimit } metadata={video} />)}
+                                        {this.state.videos.map((video, index) => <Video key={index} onFocus={ (e)=>this.selectVideo( video.id ) } onClick={ (e)=>this._handleVideoOpen( video.id ) } tabIndex={canTab} selected={ index === this.state.selected } viewed={ index <= viewLimit + 2 } metadata={video} />)}
                                     </Content>
                                 </Wrap>
                             </Stage>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Videos from './components/Videos';
-import VideosService from './services/VideosService';
+import HistoryList from './components/HistoryList';
+
 import styled from 'styled-components';
  
 const Header = styled.header`
@@ -17,8 +18,21 @@ const Header = styled.header`
 
   .App-page-title{
     color: white;
-    font-size: 1.6em;    
+    font-size: 1.6em;
+    float: left;
   }
+
+  .App-history-button{
+    color: white;
+    border: none;
+    background: none;
+    float: right;
+    height: 25px;
+  }
+`
+
+const Main = styled.main`
+  position: relative;
 `
 
 class App extends Component {
@@ -26,13 +40,25 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      videos: undefined,
-      afterLoad: false
+        historyOpen: false
     };
 
-    VideosService.getVideos().then(response => {
-      this.setState( ( state ) => { return { videos: response.result.entries || [] }; } );
-    });
+    this.history = null;
+  }
+
+  _handleHistoryClick(e){
+    this.setState( ( state ) => { return { historyOpen: !state.historyOpen }; } );
+  }
+
+  _handleVideoOpened(e){
+    console.log("Opened", e);
+    this.refs.history.addVideo(e);
+  }
+
+  _handleHistorySelect(e){
+    console.log("Selected", e);
+    this.refs.videos.selectVideo(e.video.id);
+    this.setState( ( state ) => { return { historyOpen: false }; } );    
   }
 
   render() {
@@ -41,8 +67,12 @@ class App extends Component {
         <Header className="App-header">
           <h1 className="App-title">Accedo Video Player</h1>
           <h2 className="App-page-title">Home</h2>
+          <button tabIndex="1" className="App-history-button" onClick={(e)=>this._handleHistoryClick(e)}>{ this.state.historyOpen ? "Back" : "History" }</button>
         </Header>
-        <Videos videos={this.state.videos} ></Videos>
+        <Main>
+          <HistoryList ref="history" visible={this.state.historyOpen} selectVideo={ (e)=>this._handleHistorySelect(e) } />
+          <Videos ref="videos" visible={!this.state.historyOpen} onVideoPlays={ (e)=>this._handleVideoOpened(e) }></Videos>
+        </Main>
       </div>
     );
   }

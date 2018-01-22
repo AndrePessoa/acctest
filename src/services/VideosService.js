@@ -1,5 +1,5 @@
 export default {
-    url: "http://localhost/accedo/public/api/videos-list",
+    url: "http://localhost/acctest/public/api/videos-list",
     getVideos() {
         return fetch( this.url )
         .then(res => res.json())
