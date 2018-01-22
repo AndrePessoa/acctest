@@ -1,19 +1,22 @@
 import config from "../config.js";
+import UserService from '../services/UserService';
 
 export default {
     url: config.apiUrl,
     getVideos() {
         return fetch( this.url )
-        .then(res => res.json())
-        .catch(error => console.error('Error:', error))
-        //.then(response => console.log('Success:', response));
+            .then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            //.then(response => console.log('Success:', response));
     },
     save(data){
-        localStorage.setItem('history', JSON.stringify(data));
+        let userKey = UserService.usernameSlug + "-history";
+        localStorage.setItem(userKey, JSON.stringify(data));
     },
     load(){
         var promise = new Promise(function(resolve, reject) {
-            var dataString = localStorage.getItem("history");            
+            let userKey = UserService.usernameSlug + "-history";
+            var dataString = localStorage.getItem(userKey);            
             resolve( dataString ? JSON.parse( dataString ) : [] );
         });
         return promise;        

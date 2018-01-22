@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Videos from './components/Videos';
 import HistoryList from './components/HistoryList';
+import LoginForm from './components/LoginForm';
+import UserService from './services/UserService';
 
 import styled from 'styled-components';
  
@@ -40,10 +42,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        historyOpen: false
+        historyOpen: false,
+        userIsLogged: false
     };
 
     this.history = null;
+    UserService.name = "teste";
+  }
+
+
+  _handleLoginComplete(e){
+    this.setState( ( state ) => { return { userIsLogged: true }; } );
   }
 
   _handleHistoryClick(e){
@@ -70,8 +79,19 @@ class App extends Component {
           <button tabIndex="1" className="App-history-button" onClick={(e)=>this._handleHistoryClick(e)}>{ this.state.historyOpen ? "Back" : "History" }</button>
         </Header>
         <Main>
-          <HistoryList ref="history" visible={this.state.historyOpen} selectVideo={ (e)=>this._handleHistorySelect(e) } />
-          <Videos ref="videos" visible={!this.state.historyOpen} onVideoPlays={ (e)=>this._handleVideoOpened(e) }></Videos>
+          { !this.state.userIsLogged &&
+            (
+              <LoginForm ref="login" loginComplete={ (e)=>this._handleLoginComplete(e) } />  
+            )
+          }
+          { this.state.userIsLogged &&
+            (
+              <div>
+                <HistoryList ref="history" visible={this.state.historyOpen} selectVideo={ (e)=>this._handleHistorySelect(e) } />
+                <Videos ref="videos" visible={!this.state.historyOpen} onVideoPlays={ (e)=>this._handleVideoOpened(e) }></Videos>
+              </div>         
+            )
+          }
         </Main>
       </div>
     );
