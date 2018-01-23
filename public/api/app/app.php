@@ -1,9 +1,5 @@
 <?php
 
-//phpinfo();
-//die();
-
-require ( 'mysql.php');
 require ( 'router.php');
 require ( 'services/VideoListService.php' );
 
@@ -23,52 +19,42 @@ class App {
 	}
 
 	public function processRequest(){
-		//if( empty($this->db) ){ $this->db = new MySQL($this->config); }
-
-		/*
-		try{	
-			switch ( $_SERVER['REQUEST_METHOD'] ) {
-				case 'POST':
-					$array = $this->extract_post();	
-
-					$validate = $this->validadeKeyData( $array );
-
-					if( count( $validate['valid'] ) > 0 ){
-						$this->db->post( $validate['valid'] );
-						$validate['valid'] = $this->digestReturn( $this->db->get( $validate['valid'] ) );
-						$this->render( $validate );
-					}else{
-						$this->render( $validate );
-					}
-
-					break;
-				case 'GET':
-					$array = $this->extract_get();
-					$validate = $this->validadeKeyData( $array );
-
-					if( count( $validate['valid'] ) > 0 ){
-						$validate['valid'] = $this->digestReturn( $this->db->get( $validate['valid'] ) );
-						$this->checkNotFound( $array, $validate );
-						$this->render( $validate );
-					}else{
-						$this->render( $validate );
-					}
-					
-					break;
-				default:
-					# code...
-					break;
-			}
-		} catch (Exception $e) {
-		    $this->render( 'Caught exception: ',  $e->getMessage(), true );
-		}*/
 
 		$router = new Router();
+		// GET VIDEO LIST
 		$router->addRule( "get", "/videos-list", function(){ 
 			$service = new VideoListService();
 			$json = $service->load();
-			return !empty( $json ) ? $json : "Ups";
+			return !empty( $json ) ? $json : "[]";
 		} );
+		// SAVE NEW USER
+		$router->addRule( "post", "/register", function( $input ){ 
+			$user = new UserController( $this->config );
+			$json = $user->singIn( $input['user'], $input['psw'] );
+			return !empty( $json ) ? $json : false;
+		} );
+
+		// LOAD USER
+		$router->addRule( "post", "/login", function( $input ){ 
+			$user = new UserController( $this->config );
+			$json = $user->logIn( $input['user'], $input['psw'] );
+			return !empty( $json ) ? $json : false;
+		} );
+
+		// save HISTORY
+		$router->addRule( "post", "/history", function( $input ){ 
+			$user = new UserController( $this->config );
+			$json = $user->saveHistory( $input['user'], $input['history'] );
+			return !empty( $json ) ? $json : false;
+		} );
+
+		// LOAD HISTORY
+		$router->addRule( "get", "/history", function( $input ){ 
+			$user = new UserController( $this->config );
+			$json = $user->getHistory( $input['user'] );
+			return !empty( $json ) ? $json : false;
+		} );
+
 		$router->addRule( "all", "/", function(){ return "Just ok. API working..."; } );
 		
 		$result = $router->process( $_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_REQUEST );

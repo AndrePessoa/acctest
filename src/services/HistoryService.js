@@ -2,7 +2,7 @@ import config from "../config.js";
 import UserService from '../services/UserService';
 
 export default {
-    url: config.apiUrl,
+    url: ( config.apiUrl + "/history" ),
     getVideos() {
         return fetch( this.url )
             .then(res => res.json())

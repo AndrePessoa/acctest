@@ -16,13 +16,13 @@ class Router {
             ) );
     }
 
-    public function process(  $method, $path, $variables ){
+    public function process(  $method, $path, $vars ){
         $result = false;
         $method = strtolower( $method );
         foreach( $this->rules as $rules ){
             $regExp = ( "/" . $rules->path . "/i" );
             if( !$result && ( $rules->method == "all" || $rules->method == $method ) && preg_match( $regExp, $path ) ){
-                $result = call_user_func( $rules->callback, $variables );
+                $result = call_user_func( $rules->callback, $vars );
                 break;
             }
         }

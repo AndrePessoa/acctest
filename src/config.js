@@ -1,3 +1,3 @@
 export default {
-    apiUrl: "http://localhost/acctest/public/api/videos-list"
+    apiUrl: "http://localhost/acctest/public/api"
 }

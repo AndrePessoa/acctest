@@ -100,7 +100,7 @@ class Videos extends Component {
         if(event.keyCode === 27){ this._handleVideoClosed(); }
 
         if( !this.props.visible || this.state.playing ) return;
-        //if(event.keyCode === 13){ this._handleVideoOpen(); }
+        if(event.keyCode === 13){ this._handleVideoOpen(); }
         if(event.keyCode === 40){ this._next(); }
         if(event.keyCode === 39){ this._next(); }
         if(event.keyCode === 38){ this._previous(); }

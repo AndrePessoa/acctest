@@ -34,39 +34,56 @@ const Stage = styled.section`
             font-size: 1.2em;
             margin-bottom: 25px;
             font-weight: bold;
+            background: #ababab;
+            padding: 20px;
+            margin: -20px -20px 15px;
         }
 
         &>div{
             margin-bottom: 10px;
 
             input{
+                font-size: 1.1em;
                 border: none;
-                border-bottom: 1px solid;
+                border-top: 1px solid #00000042;
                 margin-top: 5px;
                 width: 100%;
+                padding: 5px 7px;
+                box-sizing: border-box;
+                background: #ffffff3d;
+                border-radius: 2.5px;
+                box-shadow: inset 0 0 2px #0000005c;
+            }
+
+            &:hover{
+                input{
+                    background: white;
+                }
             }
         }
 
         label {
             display: block;
             font-size: 0.7em;
+            opacity: 0.5;
         }
 
-        .error{
+        .error-alert{
             color: red;
+            font-weight: bolder;
         }
 
         .primary{            
             display: block;
-            width: 100px;
+            width: 150px;
             margin: 20px auto;
             background: gray;
             color: white;
             border: none;
-            height: 25px;
+            height: 30px;
             border-radius: 25px;
-            cursor:pointer;
-
+            cursor: pointer;
+            -webkit-transition: all 0.25s;
             transition: all 0.25s;
 
             &:hover{
@@ -111,20 +128,20 @@ class LoginForm extends Component {
     _verifyForm(){
         if( this.refs.user.value.length < 3 ) return "The username must be at least 3 characters.";
         if( this.refs.password.value.length < 6 ) return "The password must be at least 6 characters.";
-        if( this.refs.password.value === this.refs.cpassword.value ) return "The password and the confirm must be the same.";
+        if( this.refs.password.value !== this.refs.cpassword.value ) return "The password and the confirm must be the same.";
 
         return "";
     }
 
     _handleSubmitClick(e){
         if( !this.state.register ){
-            UserService.login( this.refs.user.value ).then(()=>this.props.loginComplete());
+            UserService.login( this.refs.user.value, this.refs.password.value ).then(()=>this.props.loginComplete());
         }else{
             let errors = this._verifyForm();
             if( errors ){
                 this.setState( ( state ) => { return { error: errors }; } );
             }else{
-                UserService.register( this.refs.user.value ).then(()=>this.props.loginComplete()); 
+                UserService.register( this.refs.user.value, this.refs.password.value ).then(()=>this.props.loginComplete()); 
             }                       
         }        
     }
