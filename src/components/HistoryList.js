@@ -76,7 +76,7 @@ class HistoryList extends Component {
             videos: [],
         };
         HistoryService.load().then((list)=>{
-            list.map((e)=>{ this.state.videos.push( e ); });
+            list.forEach((e)=>{ this.state.videos.push( e );});
         });
     }
   

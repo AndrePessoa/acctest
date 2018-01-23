@@ -22,7 +22,7 @@ export default {
                 })
                 .then(res => res.json())
                 .then((res)=>{
-                    if( res.status == "success" ){
+                    if( res.status === "success" ){
                         this.updateUser( user ); 
                         resolve( this );
                     }else{
@@ -49,7 +49,7 @@ export default {
                 })
                 .then(res => res.json())
                 .then((res)=>{
-                    if( res.status == "success" ){
+                    if( res.status === "success" ){
                         this.updateUser( user ); 
                         resolve( this );
                     }else{
@@ -59,8 +59,7 @@ export default {
         });
         return promise; 
     },
-    updateUser(user){
-        (!user && (user == "anonymous"))
+    updateUser(user = "anonymous"){
         this.username = user;
         this.usernameSlug = user.toLowerCase().replace(/[^0-9a-z]/,"-");
     }

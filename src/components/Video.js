@@ -86,7 +86,7 @@ class Video extends Component {
       const className = (['video', selected]).join(" ");
 
     return  <Thumb className={className} height={height} width={width} tabIndex={this.props.tabIndex} onFocus={(e)=>{this.handleFocus()}} onMouseOver={ (e)=>{this.handleFocus()} } onClick={ (e)=>{this.handleClick()} } onKeyDown={(e)=>{ this.handleKeydown(e) }}>
-              { loaded && cover && <img src={cover} onLoad={this.handleImageLoaded.bind(this)}/>}
+              { loaded && cover && <img src={cover} onLoad={this.handleImageLoaded.bind(this)} alt={title}/>}
               { !cover && <div className="fakecover">no-cover</div>}
               <h3>{title}</h3>           
             </Thumb>;

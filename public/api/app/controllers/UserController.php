@@ -1,5 +1,5 @@
 <?php
-require ( 'mysql.php');
+require ( 'app/mysql.php');
 
 class UserController {
 	protected $config;

@@ -121,8 +121,6 @@ class LoginForm extends Component {
             register: false,
             error: ""
         };
-        
-        console.log( UserService.name );
     }
 
     _verifyForm(){

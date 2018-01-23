@@ -1,3 +1,3 @@
 export default {
-    apiUrl: "http://localhost/acctest/public/api"
+    apiUrl: "/api/"
 }

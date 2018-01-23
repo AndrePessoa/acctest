@@ -2,6 +2,7 @@
 
 require ( 'router.php');
 require ( 'services/VideoListService.php' );
+require ( 'controllers/UserController.php' );
 
 class App { 
 	protected $db;
@@ -23,7 +24,7 @@ class App {
 		$router = new Router();
 		// GET VIDEO LIST
 		$router->addRule( "get", "/videos-list", function(){ 
-			$service = new VideoListService();
+			$service = new VideoListService( $this->config['videos_json_service'] );
 			$json = $service->load();
 			return !empty( $json ) ? $json : "[]";
 		} );
@@ -55,7 +56,18 @@ class App {
 			return !empty( $json ) ? $json : false;
 		} );
 
-		$router->addRule( "all", "/", function(){ return "Just ok. API working..."; } );
+		// Test Database Connection
+		$router->addRule( "all", "/dbtest", function(){ 
+			$mysql = new MySQL($this->config);
+			$test = $mysql->test();
+			return !empty( $test ) ? $test : false;
+		} );
+
+		// Test API		
+		$router->addRule( "all", "/test", function(){ return "Just ok. API working..."; } );
+
+		
+
 		
 		$result = $router->process( $_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_REQUEST );
 		if( !$result ){
