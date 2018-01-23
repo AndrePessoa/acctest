@@ -31,7 +31,8 @@ const Stage = styled.section`
             position: relative;
             margin-left: 50px;
             font-size: 1.2em;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            padding: 10px;
             cursor: pointer;
 
             &:before {
@@ -47,7 +48,11 @@ const Stage = styled.section`
 
             &:hover,
             &:focus{
-                background: gray;
+                background: #d2d2d2;
+
+                time{
+                    color: rgba(0,0,0,0.5);                    
+                }
             }
         }
     }

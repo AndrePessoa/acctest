@@ -135,13 +135,23 @@ class LoginForm extends Component {
 
     _handleSubmitClick(e){
         if( !this.state.register ){
-            UserService.login( this.refs.user.value, this.refs.password.value ).then(()=>this.props.loginComplete());
+            UserService.login( this.refs.user.value, this.refs.password.value )
+                        .then(()=>this.props.loginComplete())
+                        .catch((e)=>{
+                            console.error(e);
+                            this.setState( ( state ) => { return { error: "Please, verify username and password." }; } );
+                        });
         }else{
             let errors = this._verifyForm();
             if( errors ){
                 this.setState( ( state ) => { return { error: errors }; } );
             }else{
-                UserService.register( this.refs.user.value, this.refs.password.value ).then(()=>this.props.loginComplete()); 
+                UserService.register( this.refs.user.value, this.refs.password.value )
+                            .then(()=>this.props.loginComplete())
+                            .catch((e)=>{
+                                console.error(e);
+                                this.setState( ( state ) => { return { error: "Please, verify username and password." }; } );
+                            });
             }                       
         }        
     }
