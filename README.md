@@ -16,6 +16,7 @@ I choose code the front-end with Reactjs because it is a javascript framework re
 
 ## Dependeces
 
+* Apache v2.4.27
 * Node v8.9.4
 * Yarn v1.3.2 or npm 4.0.5
 * PHP 7.0
